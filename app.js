@@ -50,14 +50,15 @@ server.use((request, response, next) => {
 
 /***********************uses routers as end point;************/
 server.use(express.json());
-server.use(classrouter);
-server.use(childrouter);
 
 //login layer
 server.use(loginRoute);
 //authuntication mw
 server.use(authenticationmw);
  server.use(teacherrouter);
+ server.use(classrouter);
+server.use(childrouter);
+
 
 //Not Found mw
 server.use((request,response)=>{

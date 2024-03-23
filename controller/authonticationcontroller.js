@@ -11,9 +11,11 @@ teacherschema.findOne({
     if(!object){
         throw new Error("Not Authenticated")
     }
+    console.log(object);
     let token = jwt.sign({
         _id: object._id,
         role: object.role
+
     },
     "nursery system",
     {expiresIn: "2hr"}
