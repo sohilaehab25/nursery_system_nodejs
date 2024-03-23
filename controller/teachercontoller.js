@@ -1,21 +1,27 @@
 const teacherschema = require('../model/teacherModel');
-
+const ClassShema = require('../model/classModel')
 exports.getAllTeacher = (req, res, next) => {
     teacherschema.find({})
     .then((data)=>{
-        res.status(200).json({ data });
+        res.status(200).json(data );
     }).catch((error) => {next(error)});
 };
 
 exports.getTeacherById = (req, res, next) => {
-    teacherschema.findOne({_id: req.params.id})
-    .then((data)=>{
-        res.status(200).json({ data });
-    }).catch((error) => {next(error)});
-};
-
+    teacherschema.findOne({_id: req.params._id})
+    .then(data=>{
+        if(!data){
+          res.status(404).json({data: "Teacher not found"});
+        }
+        res.status(200).json(data);
+      })
+      .catch(err=>next(err));
+    };
+    
 
 exports.insertTeacher = (req, res, next) => { 
+    // res.json({body: req.body, File:req.File})
+
     let object = new teacherschema(req.body);
     object
       .save()
@@ -25,22 +31,36 @@ exports.insertTeacher = (req, res, next) => {
       .catch((error) => next(error));
   };
 
-exports.updateTeacher = (req, res, next) => { // <-- Corrected order of parameters
-    const id = req.params.id;
-    const newData = req.body; 
-
-    teacherschema.findByIdAndUpdate(id, newData, { new: true })
-    .then((updatedData) => {
-        if (!updatedData) {
-            return res.status(404).json({ message: 'Data not found' });
-        }
-        res.status(200).json({ data: updatedData });
+exports.updateTeacher = (req, res, next) => { 
+    const id = req.body._id;
+    teacherschema.findByIdAndUpdate(id, req.body, {new: true})
+    .then(data => {
+      if(!data){
+        res.status(404).json({data: "Teacher not found"});
+      }
+      res.status(200).json({data: "updated Successful"});
+    }).catch(err => next(err));
+  };
+  
+  exports.getAllsupervisors = (req, res, next) => {
+    ClassShema.find({})
+    .populate(
+      {
+        path:'supervisor', 
+        select: {fullName: 1},
+      }
+      )
+    .then(data=>{
+      let supervisors = data.map(item=>item.supervisor);
+      res.status(200).json({supervisors})
     })
-    .catch((error) => next(error));
-};
-
-exports.deleteTeacher = (req, res, next) => { // <-- Corrected order of parameters
-    const id = req.params.id;
+    .catch(err=>next(err));
+  }
+  
+  
+  
+exports.deleteTeacher = (req, res, next) => { 
+    const id = req.body._id;
 
     teacherschema.findByIdAndDelete(id)
     .then((deletedData) => {

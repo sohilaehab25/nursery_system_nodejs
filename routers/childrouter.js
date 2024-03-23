@@ -12,7 +12,7 @@ router
     .get(childController.getAllchildren)
     .post(insertValidator, validationResult, childController.insertChild)
     .patch(updateValidator, validationResult, childController.updateChild)
-    .delete(deleteValidator, validationResult, childController.deleteChild); 
+    .delete(childController.deleteChild); 
 
 router.route("/children/:id").get(childController.getchildrenById);
 

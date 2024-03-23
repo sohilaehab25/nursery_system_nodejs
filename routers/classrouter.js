@@ -9,8 +9,12 @@ router.route("/class")
     .get(classController.getAllclass)
     .post(insertValidator, validationResult, classController.insertClass)
     .patch(updateValidator, validationResult, classController.updateClass)
-    .delete(deleteValidator, validationResult, classController.deleteClass);
-
-router.route("/class/:id").get(classController.getClassById);
+    .delete( classController.deleteClass);
+    router.get('/class/child/:id', classController.getClassChlidern);
+    router.get('/class/teacher/:id',classController.getTeacherClass);
+    
+    router.route('/class/:id')
+        .get(classController.getClassById)
+        .delete(classController.deleteClass)
 
 module.exports = router;

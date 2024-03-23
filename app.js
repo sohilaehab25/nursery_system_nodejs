@@ -2,13 +2,17 @@ const express = require("express");
 const cors = require('cors');
 const morgan = require('morgan');
 const mongoose  = require("mongoose");
-
+require('dotenv').config();
 const teacherrouter= require('./routers/teacherrouter');
 const childrouter = require('./routers/childrouter');
 const classrouter= require('./routers/classrouter');
-const server = express();
-const port = process.env.PORT || 8080;
 
+const loginRoute = require('./routers/authuntication')
+const authenticationmw = require("./midelware/authenticationmw");
+const server = express();
+
+//portnumber
+const port = process.env.PORT || 8080;
 
 //connect to databse
 mongoose
@@ -22,6 +26,7 @@ mongoose
 .catch((error) => {
   console.log("DB Problem ..." + error);
 });
+
 // Using cors
 const corsOptions = {
     origin: 'http://localhost:8080',
@@ -45,11 +50,14 @@ server.use((request, response, next) => {
 
 /***********************uses routers as end point;************/
 server.use(express.json());
-server.use(childrouter);
-server.use(teacherrouter);
 server.use(classrouter);
+server.use(childrouter);
 
-
+//login layer
+server.use(loginRoute);
+//authuntication mw
+server.use(authenticationmw);
+ server.use(teacherrouter);
 
 //Not Found mw
 server.use((request,response)=>{

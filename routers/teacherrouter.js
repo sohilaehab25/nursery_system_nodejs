@@ -4,14 +4,16 @@ const  {
   insertValidator, updateValidator, deleteValidator
 }= require("./../midelware/validation/teachervalidator");
 const validationResult = require('./../midelware/validation/validationResult');
+// const authmw = require("../midelware/validationmw");
+const {isAdmin} = require('../midelware/authenticationmw');
 const router = express.Router(); 
 
 router
   .route("/teacher")
-  .get(teacherController.getAllTeacher)
+  .get(isAdmin, teacherController.getAllTeacher)
   .post(insertValidator, validationResult, teacherController.insertTeacher)
   .patch(updateValidator, validationResult, teacherController.updateTeacher)
-  .delete(deleteValidator, validationResult, teacherController.deleteTeacher) 
+  .delete(teacherController.deleteTeacher) 
 
 router.route("/teacher/:id").get(teacherController.getTeacherById);
 

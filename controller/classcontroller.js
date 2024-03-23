@@ -1,41 +1,58 @@
 const classSchema = require('../model/classModel');
+const childShema = require('../model/childModel');
+
+//check if there is same child or not 
+async function checkDuplicateChildren(childrenToAdd){
+    const existingClasses = await classSchema.find({children: {$in: childrenToAdd}});
+    if(existingClasses.length > 0){
+        const existingChildIds = existingClasses.map(cls => cls.children).flat();
+        const duplicateChildIds = childrenToAdd.filter(childId => existingChildIds.includes(childId));
+        return duplicateChildIds;
+    }
+    return [];
+}
+
 
 exports.getAllclass = (req, res, next) => {
     classSchema.find({})
-    .then((data) => {
-        res.status(200).json({ data });
-    })
-    .catch((error) => { next(error) });
+    .populate({path:'supervisor', select: {_id:0,fullName: 1}})
+    .populate({path: 'children' , select: {_id:0,fullName: 1}})
+    .then((data)=>res.status(200).json({data}))
+    .catch((err)=>next(err));
 };
+
 
 exports.getClassById = (req, res, next) => {
     classSchema.findOne({ _id: req.params.id })
-  
-    .then((object) => {
-        if(!object){
-            return res.status(404).json({massage: 'class not found'})
-        }
-        res.status(200).json({ object });
-    })
-    .catch((error) => { next(error) });
+    .populate({path:'supervisor', select: {_id:0,fullName: 1}})
+    .populate({path: 'children' , select: {_id:0,fullName: 1}})
+    .then((data)=>res.status(200).json({data}))
+    .catch((err)=>next(err));
 };
 
-exports.insertClass = (req, res, next) => {
-    // const { _id, ...requestData } = req.body; // Destructure _id from request body
-    const newObject = new classSchema(requestData); // Create new object without _id
-    newObject
-    .save()
-    .then((data) => {
-        res.status(200).json({ data });
-    })
-    .catch((error) => { next(error) });
+
+exports.insertClass = async(req, res, next) => {
+    if(req.body._id != undefined){
+        res.status(400).json({message:"You can not send id => this auto increment"});
+    }
+    //check duplicate children
+    const childrenToAdd = req.body.children;
+    const duplicateChildIds = await checkDuplicateChildren(childrenToAdd);
+    if (duplicateChildIds.length > 0) {
+        return res.status(400).json({ message: `Children ${duplicateChildIds.join(', ')} already belong to another class` });
+    }
+    const newClass = new classSchema(req.body);
+    newClass.save()
+    .then((data)=>res.status(200).json({data}))
+    .catch(err=>next(err));
 };
+
 
     // console.log(req.body);
     // res.status(200).json({data:"data is added"})
 
 exports.updateClass = (res,req,next)=>{
-    const id = req.params;
+    const id = req.body._id;
     const newData = req.params;
     classSchema.findByIdAndUpdate(id, newData, {new : true})
     then((updatedData)=>{
@@ -46,7 +63,7 @@ exports.updateClass = (res,req,next)=>{
     }).catch((error)=>{next(error)});
 }
 exports.deleteClass = (res, req, next) => {
-    const {id} = req.params;
+    const id = req.body._id;
     classSchema.findByIdAndDelete(id)
     .then((deletedData)=>{
         if(!deletedData){
@@ -58,4 +75,33 @@ exports.deleteClass = (res, req, next) => {
 
 }
 
+exports.getClassChlidern = async(req,res,next)=>{
+    try{
+        const classID = req.params._id;
+        const classInfo = await  classSchema.findById(classID);
+        const className = classInfo.name;
+        if (!classInfo) {
+            return res.status(404).json({ message: "Class not found" });
+        }
+        const childrenIds = classInfo.children;
+        const childrenInfo = await childShema.find({ _id: { $in: childrenIds } });
 
+        if (!childrenInfo || childrenInfo.length === 0) {
+            return res.status(404).json({ message: "No children found for this class" });
+        }
+        res.status(200).json({ name:className, childrenInfo });
+    }catch(err){
+        next(err);
+    }
+};
+
+exports.getTeacherClass = (req,res,next)=>{
+    const classID = req.params.id;
+     classSchema.findById(classID).populate('supervisor')
+    .then((data)=>{
+        if(!data){
+            res.status(404).json({message:"Class not found"});
+        }
+        res.status(200).json({class: data.name,supervisor: data.supervisor})
+    }).catch(err=>next(err));
+}

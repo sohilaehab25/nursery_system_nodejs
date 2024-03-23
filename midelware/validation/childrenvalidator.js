@@ -1,46 +1,47 @@
 const { body, param, query } = require('express-validator');
 
 exports.insertValidator = [
-    body("_id").isInt().withMessage("child Id should be integer"),
     body("fullName")
-        .isAlpha()
+        .isString()
         .withMessage("fullName should be string")
-        .isLength({ max: 10 })
-        .withMessage("child name <10"),
+        .isLength({ min: 3 })
+        .withMessage("child name >3"),
     body("age")
         .isInt()
         .withMessage("Age should be Number"),
     body("level")
         .isIn(["PREKG", "KG1", "KG2"])
-        .toLowerCase() 
+        // .toLowerCase() 
         .withMessage("You should select one of existed levels"),
-    body("address.city").isString().withMessage("Invalid city"),
-    body("address.street").isString().withMessage("Invalid street"),
-    body("address.building").isNumeric().withMessage("Invalid building")
+    body('address').isObject().withMessage('address must be an object'),
+    body("address.city").isLength({min: 3}).withMessage("city min length is 3"),
+    body("address.street").isLength({min: 3}).withMessage("street min length is 3"),
+    // body("address.building").isNumeric().withMessage("Invalid building")
 ];
 
 
 exports.updateValidator = [
-    param("_id").isInt().withMessage("child Id should be integer"),
+    // param("_id").isInt().withMessage("child Id should be integer"),
     body("fullName")
-            .isAlpha()
+            .optional()
+            .isString()
             .withMessage("fullName should be string")
-            .isLength({ max: 10 })
-            .withMessage("child name <10"),
+            .isLength({ min: 3 })
+            .withMessage("child name >3"),
         body("age")
+            .optional()
             .isInt()
             .withMessage("Age should be Number"),
         body("level")
+        .optional()
             .isIn(["PREKG", "KG1", "KG2"])
             .withMessage("You should select one of existed levels"),
-        body("address.city").isString().withMessage("Invalid city"),
-        body("address.street").isString().withMessage("Invalid street"),
-        body("address.bulding").isNumeric().withMessage("Invalid bulding")
+        body("address.city").optional().isString().withMessage("Invalid city"),
+        body("address.street")           
+         .optional()
+        .isString().withMessage("Invalid street"),
+        // body("address.bulding").isNumeric().withMessage("Invalid bulding")
     
     ];
     
-exports.deleteValidator = [
-    param("_id")
-        .isInt()
-        .withMessage("ID should be an integer")
-];
+
