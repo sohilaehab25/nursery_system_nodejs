@@ -1,8 +1,16 @@
 const jwt = require("jsonwebtoken");
 module.exports = (req, res, next) => {
   try {
-    let token = req.get("authorization").split(" ")[1];
-  //console.log(token);
+    const authHeader = req.get("authorization");
+    if (!authHeader) {
+      throw new Error("Authorization header missing");
+    }
+    console.log(authHeader);
+    const token = authHeader.split(" ")[1];
+
+    console.log("##############")
+    // let token = req.get("authorization").split(" ")[1];
+    console.log(token);
   // console.log("##############")
   let decoded_token = jwt.verify(token, "nursery system");
   // console.log("**************")

@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="http://localhost:8080/children" method="post" enctype="multipart/form-data">
+        <!-- id<input type="text" placeholder="id"/> -->
+        fullName<input type="text" placeholder="fullName" name="fullname"/>
+        age<input type="number" placeholder="age" name="age"/>
+        email<input type="email" placeholder="email" name="email"/>
+        <!-- supervisor_id<input type="password" placeholder="supervisor_id"/> -->
+        image<input type="file" name="Image" />
+        level<select name="level">
+            <option value="PreKG">PreKG</option>
+            <option value="KG1">KG1</option>
+            <option value="KG2">KG2</option>
+        </select>
+        supmit<input type="submit" value="add"/>
+    </form>
+
+</body>
+</html>

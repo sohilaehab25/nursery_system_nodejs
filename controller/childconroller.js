@@ -18,10 +18,21 @@ exports.getchildrenById = (req, res, next) => {
 };
 
 exports.insertChild = (req, res, next) => {
+ 
+    const { fullname, age, level, address } = req.body;
+    const image = req.file.originalname; 
+    
     if (req.body._id !== undefined) {
         return res.status(400).json({ message: 'id is Auto increment' });
     }
-    const newChild = new childrenschema(req.body); // Use childrenschema instead of childShema
+    const newChild = new teacherschema({
+      fullname: fullname,
+      age: age,
+      level:level,
+      Image: image, 
+      address: address
+    });
+    // const newChild = new childrenschema(req.body); // Use childrenschema instead of childShema
     newChild.save()
     .then(data => res.status(201).json(data))
     .catch(err => next(err));

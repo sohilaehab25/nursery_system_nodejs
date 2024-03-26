@@ -19,18 +19,27 @@ exports.getTeacherById = (req, res, next) => {
     };
     
 
-exports.insertTeacher = (req, res, next) => { 
-    // res.json({body: req.body, File:req.File})
-
-    let object = new teacherschema(req.body);
-    object
-      .save()
-      .then((data) => {
-        res.status(200).json({ data });
-      })
-      .catch((error) => next(error));
-  };
-
+    exports.insertTeacher = (req, res, next) => {
+      const { fullname, email, password, role } = req.body;
+      const image = req.file.originalname; // Assuming multer or similar middleware has stored the filename
+      console.log(req.file);
+      console.log(image);
+      //res.status(200).json({req:req.file});
+      const newTeacher = new teacherschema({
+        fullname: fullname,
+        email: email,
+        password: password,
+        Image: image, // Store the filename of the image
+        role: role
+      });
+    
+      newTeacher.save()
+        .then((data) => {
+          res.status(200).json({ data });
+        })
+        .catch((error) => next(error));
+    };
+    
 exports.updateTeacher = (req, res, next) => { 
     const id = req.body._id;
     teacherschema.findByIdAndUpdate(id, req.body, {new: true})

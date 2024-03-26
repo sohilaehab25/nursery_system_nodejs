@@ -1,17 +1,17 @@
 const { body, param, query } = require("express-validator");
 
 exports.insertValidator = [
-    // body("_id")
-    //     .isMongoId()
-    //     .withMessage("id should be a valid MongoDB ObjectId"),
 
     body("fullname")
+    
         .isString()
+        .withMessage('name must be string')
         .notEmpty()
         .withMessage("Full name is required"),
 
     body("password")
         .isString()
+        .withMessage("Password must be string")
         .isLength({ min: 3, max: 10 })
         .withMessage("Password must be between 3 and 30 characters"),
 

@@ -17,6 +17,7 @@ const schema = new mongoose.Schema({
         enum: ['PreKG', 'KG1', 'KG2'],
         required: true
     },
+    Image: String,
     address: addressSchema
 });
 

@@ -9,6 +9,7 @@ teacherschema.findOne({
 })
 .then((object)=>{
     if(!object){
+        console.log("hi from login page")
         throw new Error("Not Authenticated")
     }
     console.log(object);
