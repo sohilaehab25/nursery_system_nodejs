@@ -3,9 +3,9 @@ const teacherShema = require('../../model/teacherModel');
 const childShema = require('../../model/childModel');
 
 exports.insertValidator = [
-    body('_id')
-    .isInt().
-    withMessage('Id should be intger'),
+    // body('_id')
+    // .isInt().
+    // withMessage('Id should be intger'),
     body("name")
         .isString()
         .withMessage("Name should be a string")
@@ -73,3 +73,42 @@ exports.updateValidator = [
             return true;
         }),
     ];
+    exports.updateValidator = [
+        body("name")
+            .optional()
+            .isString()
+            .withMessage("Name should be a string")
+            .isLength({ max: 10 })
+            .withMessage("Name should not exceed 10 characters"),
+        body("supervisor")
+            .optional()
+            .isMongoId()
+            .withMessage("Supervisor must be a valid MongoDB ID")
+            .custom(async (value) => {
+                const supervisorExists = await teacherShema.exists({ _id: value });
+                if (!supervisorExists) {
+                    throw new Error("Supervisor doesn't exist");
+                }
+                return true;
+            }),
+        body("children")
+            .optional()
+            .isArray()
+            .withMessage("Children must be an array")
+            .custom(arr => arr.length >= 2)
+            .withMessage("Class must have at least 2 children")
+            .custom(async (children) => {
+                const invalidIDs = [];
+                for (let childID of children) {
+                    const childExists = await childShema.exists({ _id: childID });
+                    if (!childExists) {
+                        invalidIDs.push(childID);
+                    }
+                }
+                if (invalidIDs.length > 0) {
+                    throw new Error(`Children with IDs ${invalidIDs.join(', ')} don't exist in the Childs table`);
+                }
+                return true;
+            }),
+    ];
+    

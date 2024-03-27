@@ -1,5 +1,5 @@
 const classSchema = require('../model/classModel');
-const childShema = require('../model/childModel');
+const childShema = require("../model/childModel");
 
 //check if there is same child or not 
 async function checkDuplicateChildren(childrenToAdd){
@@ -12,7 +12,6 @@ async function checkDuplicateChildren(childrenToAdd){
     return [];
 }
 
-
 exports.getAllclass = (req, res, next) => {
     classSchema.find({})
     .populate({path:'supervisor', select: {_id:0,fullName: 1}})
@@ -21,7 +20,6 @@ exports.getAllclass = (req, res, next) => {
     .catch((err)=>next(err));
 };
 
-
 exports.getClassById = (req, res, next) => {
     classSchema.findOne({ _id: req.params.id })
     .populate({path:'supervisor', select: {_id:0,fullName: 1}})
@@ -29,7 +27,6 @@ exports.getClassById = (req, res, next) => {
     .then((data)=>res.status(200).json({data}))
     .catch((err)=>next(err));
 };
-
 
 exports.insertClass = async(req, res, next) => {
     if(req.body._id != undefined){
@@ -47,37 +44,32 @@ exports.insertClass = async(req, res, next) => {
     .catch(err=>next(err));
 };
 
-
-    // console.log(req.body);
-    // res.status(200).json({data:"data is added"})
-
-exports.updateClass = (res,req,next)=>{
-    const id = req.body._id;
-    const newData = req.params;
+exports.updateClass = (req,res,next)=>{
+    const id = req.params.id;
+    const newData = req.body;
     classSchema.findByIdAndUpdate(id, newData, {new : true})
-    then((updatedData)=>{
+    .then((updatedData)=>{
         if(!updatedData){
-            return res.status(404).json({massage: 'not found'});
+            return res.status(404).json({message: 'not found'});
         }
-        res.status(200).json({data:updatedData})
+        res.status(200).json({data: updatedData});
     }).catch((error)=>{next(error)});
 }
-exports.deleteClass = (res, req, next) => {
-    const id = req.body._id;
+
+exports.deleteClass = (req, res, next) => {
+    const id = req.params.id;
     classSchema.findByIdAndDelete(id)
     .then((deletedData)=>{
         if(!deletedData){
-            return res.status(404).json({massage:"not found"});
-
+            return res.status(404).json({message:"not found"});
         }
         res.status(200).json({data:'is deleted'})
     }).catch((error)=>{next(error)});
-
 }
 
 exports.getClassChlidern = async(req,res,next)=>{
     try{
-        const classID = req.params._id;
+        const classID = req.params.id;
         const classInfo = await  classSchema.findById(classID);
         const className = classInfo.name;
         if (!classInfo) {
@@ -97,7 +89,7 @@ exports.getClassChlidern = async(req,res,next)=>{
 
 exports.getTeacherClass = (req,res,next)=>{
     const classID = req.params.id;
-     classSchema.findById(classID).populate('supervisor')
+    classSchema.findById(classID).populate('supervisor')
     .then((data)=>{
         if(!data){
             res.status(404).json({message:"Class not found"});

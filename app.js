@@ -78,7 +78,7 @@ server.use(express.json());
 //login layer
 server.use(loginRoute);
 //authuntication mw
-server.use(authenticationmw);
+// server.use(authenticationmw);
  server.use(teacherrouter);
  server.use(classrouter);
 server.use(childrouter);
