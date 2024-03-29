@@ -5,12 +5,16 @@ const path = require('path');
 const cors = require('cors');
 const morgan = require('morgan');
 const mongoose  = require("mongoose");
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 const teacherrouter= require('./routers/teacherrouter');
 const childrouter = require('./routers/childrouter');
 const classrouter= require('./routers/classrouter');
 const loginRoute = require('./routers/authuntication')
 const authenticationmw = require("./midelware/authenticationmw");
+const swaggerSpec = require('./swagger');
+// const swaggerJSDoc = require("swagger-jsdoc");
+
 const server = express();
 
   //image variable for string the path and name of image 
@@ -34,11 +38,12 @@ const fileFilter = (req,file,cb)=>{
 }
 
 //portnumber
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 9090;
+const DBUrl = process.env.DBURL;
 
 //connect to databse
 mongoose
-.connect("mongodb://127.0.0.1:27017/nurserysystem")
+.connect(DBUrl)
 .then(() => {
   console.log("DB Connected....");
   server.listen(port, () => {
@@ -74,14 +79,16 @@ server.use("/images", express.static(path.join(__dirname, "images")))
 server.use(multer({storage,fileFilter}).single("Image"))
 
 server.use(express.json());
+server.use(classrouter);
+server.use(teacherrouter);
+server.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //login layer
 server.use(loginRoute);
 //authuntication mw
-// server.use(authenticationmw);
- server.use(teacherrouter);
- server.use(classrouter);
+ server.use(authenticationmw);
 server.use(childrouter);
+
 
 
 //Not Found mw
@@ -94,5 +101,4 @@ server.use((request,response)=>{
 // Error MW
 server.use((error, request, response, next) => {
     response.status(500).json({ data: `Error MW ${error}` });
-  });
-  
+  });  

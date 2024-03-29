@@ -29,16 +29,25 @@ exports.getClassById = (req, res, next) => {
 };
 
 exports.insertClass = async(req, res, next) => {
-    if(req.body._id != undefined){
-        res.status(400).json({message:"You can not send id => this auto increment"});
-    }
+    // return res.status(200).json({mas:"in function"});
+        // if(req.body._id != undefined){
+    //     res.status(400).json({message:"You can not send id => this auto increment"});
+    // }
     //check duplicate children
-    const childrenToAdd = req.body.children;
-    const duplicateChildIds = await checkDuplicateChildren(childrenToAdd);
-    if (duplicateChildIds.length > 0) {
-        return res.status(400).json({ message: `Children ${duplicateChildIds.join(', ')} already belong to another class` });
-    }
-    const newClass = new classSchema(req.body);
+    // const childrenToAdd = req.body.children;
+    // const duplicateChildIds = await checkDuplicateChildren(childrenToAdd);
+    // return  res.status(200).json({mes: duplicateChildIds});
+
+    // if (duplicateChildIds.length > 0) {
+    //     return res.status(400).json({ message: `Children ${duplicateChildIds.join(', ')} already belong to another class` });
+    // }
+    // return res.status(200).json({mes:"in fin"})
+;    const {name,supervisor,children} = req.body;
+    const newClass = new classSchema({
+        name,
+        supervisor,
+        children
+    });
     newClass.save()
     .then((data)=>res.status(200).json({data}))
     .catch(err=>next(err));

@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+require('dotenv').config(); 
+
 module.exports = (req, res, next) => {
   try {
     const authHeader = req.get("authorization");
@@ -9,10 +11,10 @@ module.exports = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     console.log("##############")
-    // let token = req.get("authorization").split(" ")[1];
     console.log(token);
   // console.log("##############")
-  let decoded_token = jwt.verify(token, "nursery system");
+  const secretKey = process.env.SECRETKEY; 
+  let decoded_token = jwt.verify(token, secretKey);
   // console.log("**************")
   console.log(decoded_token);
     req.token = decoded_token;

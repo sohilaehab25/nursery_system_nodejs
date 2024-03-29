@@ -1,4 +1,5 @@
 const { body, param, query } = require("express-validator");
+const teacherschema = require('../../model/teacherModel');
 
 exports.insertValidator = [
 
@@ -14,10 +15,17 @@ exports.insertValidator = [
         .withMessage("Password must be string")
         .isLength({ min: 3, max: 10 })
         .withMessage("Password must be between 3 and 30 characters"),
-
     body("email")
         .isEmail()
-        .withMessage("Enter a valid email address"),
+        .withMessage("Enter a valid email address")
+        .custom(async (value, { req }) => {
+            // Check if email already exists
+            const existingTeacher = await teacherschema.findOne({ email: value });
+            if (existingTeacher) {
+                throw new Error("Email already exists");
+            }
+            return true;
+        }),
 
     body("image")
         .optional()
@@ -27,9 +35,6 @@ exports.insertValidator = [
 ];
 
 exports.updateValidator = [
-    // param("_id")
-    //     .isMongoId()
-    //     .withMessage("id should be a valid MongoDB ObjectId"),
 
     body("fullname")
     .optional()
@@ -53,8 +58,3 @@ exports.updateValidator = [
         .withMessage("Image must be a string")
 ];
 
-// exports.deleteValidator = [
-//     param("_id")
-//         .isMongoId()
-//         .withMessage("id should be a valid MongoDB ObjectId")
-// ];

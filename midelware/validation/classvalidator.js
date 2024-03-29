@@ -24,19 +24,19 @@ exports.insertValidator = [
         .isArray()
         .withMessage("Children should be an array of child IDs")
         .optional()
-        .custom(arr=>arr.length > 2).withMessage("class must have at least 2 child").custom(async(children)=>{
-            const invalidID = [];
-            for(let childID of children){
-                const childExists = await childShema.exists({ _id: childID });
-                if(!childExists){
-                    invalidID.push(childID);
-                }
-            }
-            if(invalidID.length > 0){
-                throw new Error(`child with id ${invalidID.join(', ')} doesn't exist in table Childs`);
-            }
-            return true;
-        }),
+        // .custom(arr=>arr.length >= 2).withMessage("class must have at least 2 child").custom(async(children)=>{
+        //     const invalidID = [];
+        //     for(let childID of children){
+        //         const childExists = await childShema.exists({ child_id: childID });
+        //         if(!childExists){
+        //             invalidID.push(childID);
+        //         }
+        //     }
+        //     if(invalidID.length > 0){
+        //         throw new Error(`child with id ${invalidID.join(', ')} doesn't exist in table Childs`);
+        //     }
+        //     return true;
+        // }),
     ];
     
 
