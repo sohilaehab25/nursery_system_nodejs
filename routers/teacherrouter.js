@@ -6,7 +6,7 @@ const  {
 const validationResult = require('./../midelware/validation/validationResult');
 const passwordcontroller = require('../controller/chnagepasswordcontroller');
 // const {isAdmin} = require('../midelware/authenticationmw');
-// const {isteacher} = require('../midelware/authenticationmw');
+//  const {isteacher} = require('../midelware/authenticationmw');
 const router = express.Router(); 
 
 router

@@ -10,17 +10,14 @@ module.exports = (req, res, next) => {
     console.log(authHeader);
     const token = authHeader.split(" ")[1];
 
-    console.log("##############")
-    console.log(token);
-  // console.log("##############")
+    // console.log(token);
   const secretKey = process.env.SECRETKEY; 
   let decoded_token = jwt.verify(token, secretKey);
-  // console.log("**************")
-  console.log(decoded_token);
+  // console.log(decoded_token);
     req.token = decoded_token;
     next();
   } catch (error) {
-    error.message = "not Athenticated";
+    error.message = "you are not Authorizatied";
     next(error);
   }
 };

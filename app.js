@@ -88,6 +88,8 @@ server.use(loginRoute);
 //authuntication mw
  server.use(authenticationmw);
 server.use(childrouter);
+server.use(teacherrouter);
+
 
 
 
