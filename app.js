@@ -80,7 +80,7 @@ server.use(multer({storage,fileFilter}).single("Image"))
 
 server.use(express.json());
 server.use(classrouter);
-server.use(teacherrouter);
+// server.use(teacherrouter);
 server.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //login layer

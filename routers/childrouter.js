@@ -14,7 +14,7 @@ router
     .get(childController.getAllchildren)
     .post(isAdmin,insertValidator,validationResult, childController.insertChild)
     .patch(updateValidator, validationResult, childController.updateChild)
-    .delete(childController.deleteChild); 
+    .delete(isAdmin,childController.deleteChild); 
 
 
 router.route("/children/:id")

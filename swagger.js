@@ -10,8 +10,24 @@ const options = {
         servers: [{
             url: 'http://localhost:8080/',
         }],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'apiKey',
+                    in: 'header',
+                    name: 'Authorization',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
-    apis: ['./controller/*js'],
+    apis: ['./controller/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

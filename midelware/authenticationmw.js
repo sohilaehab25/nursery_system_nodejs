@@ -1,6 +1,21 @@
 const jwt = require("jsonwebtoken");
 require('dotenv').config(); 
 
+/**
+ * @swagger
+ * /api/users/test:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Test authorization
+ *     tags: [User]
+ *     description: Use to test authorization JWT
+ *     responses:
+ *       '200':
+ *         description: Success
+ *       '500':
+ *         description: Internal server error
+ */
 module.exports = (req, res, next) => {
   try {
     const authHeader = req.get("authorization");
@@ -10,25 +25,69 @@ module.exports = (req, res, next) => {
     console.log(authHeader);
     const token = authHeader.split(" ")[1];
 
-    // console.log(token);
-  const secretKey = process.env.SECRETKEY; 
-  let decoded_token = jwt.verify(token, secretKey);
-  // console.log(decoded_token);
-    req.token = decoded_token;
+    const secretKey = process.env.SECRETKEY; 
+    let decodedToken = jwt.verify(token, secretKey);
+    req.token = decodedToken;
     next();
   } catch (error) {
-    error.message = "you are not Authorizatied";
+    error.message = "You are not authorized";
     next(error);
   }
 };
 
+/**
+ * Middleware function to check if the user is an admin
+ */
+/**
+ * Middleware function to check if the user is an admin
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   security:
+ *     - bearerAuth: []
+ *   responses:
+ *     200:
+ *       description: Success
+ *     401:
+ *       description: Unauthorized
+ *     500:
+ *       description: Internal server error
+ */
 module.exports.isAdmin = (req, res, next) => {
-  console.log(req.token.role);
-  if (req.token.role == "admin") next();
-  else next(new Error("not Authorizatied"));
+  if (req.token.role === "admin") {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
 };
 
-module.exports.isteacher = (req, res, next) => {
-  if (req.token.role == "teacher") next();
-  else next(new Error("not Authorizatied"));
+/**
+ * Middleware function to check if the user is a teacher
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   security:
+ *     - bearerAuth: []
+ *   responses:
+ *     200:
+ *       description: Success
+ *     401:
+ *       description: Unauthorized
+ *     500:
+ *       description: Internal server error
+ */
+module.exports.isTeacher = (req, res, next) => {
+  if (req.token.role === "teacher") {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
 };
