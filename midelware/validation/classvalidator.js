@@ -50,7 +50,7 @@ exports.updateValidator = [
         .withMessage("Name should be a string")
         .isLength({ max: 10 })
         .withMessage("Name should not exceed 10 characters"),
-        body("supervisor").optional().isMongoId().withMessage("supervisor must be a number").custom(
+    body("supervisor").optional().isMongoId().withMessage("supervisor must be a number").custom(
             async(value)=>{
                 const supervisorExists = await teacherShema.exists({ _id: value });
                 if(!supervisorExists){
@@ -59,10 +59,10 @@ exports.updateValidator = [
                 return true;
             }),
     
-        body("children").optional().isArray().withMessage("children must be an array").custom(arr=>arr.length > 2).withMessage("class must have at least 2 child").custom(arr=>arr.length > 2).withMessage("class must have at least 2 child").custom(async(children)=>{
+    body("children").optional().isArray().withMessage("children must be an array").custom(arr=>arr.length > 2).withMessage("class must have at least 2 child").custom(arr=>arr.length > 2).withMessage("class must have at least 2 child").custom(async(children)=>{
             const invalidID = [];
             for(let childID of children){
-                const childExists = await childShema.exists({ _id: childID });
+                const childExists = await childShema.exists({ child_id: childID });
                 if(!childExists){
                     invalidID.push(childID);
                 }
@@ -100,7 +100,7 @@ exports.updateValidator = [
             .custom(async (children) => {
                 const invalidIDs = [];
                 for (let childID of children) {
-                    const childExists = await childShema.exists({ _id: childID });
+                    const childExists = await childShema.exists({ child_id: childID });
                     if (!childExists) {
                         invalidIDs.push(childID);
                     }

@@ -14,8 +14,8 @@ exports.insertValidator = [
         // .toLowerCase() 
         .withMessage("You should select one of existed levels"),
     body('address').isObject().withMessage('address must be an object'),
-    body("address.city").isLength({min: 3}).withMessage("city min length is 3"),
-    body("address.street").isLength({min: 3}).withMessage("street min length is 3"),
+    // body("address.city").isLength({min: 3}).withMessage("city min length is 3"),
+    // body("address.street").isLength({min: 3}).withMessage("street min length is 3"),
     // body("address.building").isNumeric().withMessage("Invalid building")
 ];
 

@@ -88,8 +88,12 @@ exports.getchildrenById = (req, res, next) => {
  */
 exports.insertChild = (req, res, next) => {
     const { fullName, age, level, address } = req.body;
-    const Image = req.file.originalname; 
+    const Image = req.file?.originalname; // Using optional chaining operator
     
+    if (!Image) {
+        return res.status(400).json({ message: 'Image file is required' });
+    }
+       
     if (req.body._id !== undefined) {
         return res.status(400).json({ message: 'id is Auto increment' });
     }

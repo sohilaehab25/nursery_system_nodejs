@@ -5,16 +5,16 @@ const  {
 }= require("./../midelware/validation/teachervalidator");
 const validationResult = require('./../midelware/validation/validationResult');
 const passwordcontroller = require('../controller/chnagepasswordcontroller');
-const {isAdmin} = require('../midelware/authenticationmw');
+// const {isAdmin} = require('../midelware/authenticationmw');
 //  const {isteacher} = require('../midelware/authenticationmw');
 const router = express.Router(); 
 
 router
   .route("/teacher")
-  .get(isAdmin,teacherController.getAllTeacher)
+  .get(teacherController.getAllTeacher)
   .post( insertValidator,validationResult,teacherController.insertTeacher)
   .patch(updateValidator, validationResult, teacherController.updateTeacher)
-  .delete(isAdmin,teacherController.deleteTeacher) 
+  .delete(teacherController.deleteTeacher) 
 
 
   router.route("/changepassword").patch(passwordcontroller.changepassword)
@@ -23,7 +23,7 @@ router
 router.route("/teacher/:id")
 .get(teacherController.getTeacherById)
 
-router.route("/supervisors").get(isAdmin,teacherController.getAllsupervisors);
+router.route("/supervisors").get(teacherController.getAllsupervisors);
 
 
 

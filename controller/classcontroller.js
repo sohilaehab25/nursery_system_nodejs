@@ -1,16 +1,17 @@
+const mongoose = require('mongoose');
 const classSchema = require('../model/classModel');
 const childShema = require("../model/childModel");
 
 //check if there is same child or not 
-async function checkDuplicateChildren(childrenToAdd){
-    const existingClasses = await classSchema.find({children: {$in: childrenToAdd}});
-    if(existingClasses.length > 0){
-        const existingChildIds = existingClasses.map(cls => cls.children).flat();
-        const duplicateChildIds = childrenToAdd.filter(childId => existingChildIds.includes(childId));
-        return duplicateChildIds;
-    }
-    return [];
-}
+// async function checkDuplicateChildren(childrenToAdd){
+//     const existingClasses = await classSchema.find({children: {$in: childrenToAdd}});
+//     if(existingClasses.length > 0){
+//         const existingChildIds = existingClasses.map(cls => cls.children).flat();
+//         const duplicateChildIds = childrenToAdd.filter(childId => existingChildIds.includes(childId));
+//         return duplicateChildIds;
+//     }
+//     return [];
+// }
 
 exports.getAllclass = (req, res, next) => {
     classSchema.find({})
@@ -28,7 +29,7 @@ exports.getClassById = (req, res, next) => {
     .catch((err)=>next(err));
 };
 
-exports.insertClass = async(req, res, next) => {
+// exports.insertClass = async(req, res, next) => {
     // return res.status(200).json({mas:"in function"});
         // if(req.body._id != undefined){
     //     res.status(400).json({message:"You can not send id => this auto increment"});
@@ -42,15 +43,51 @@ exports.insertClass = async(req, res, next) => {
     //     return res.status(400).json({ message: `Children ${duplicateChildIds.join(', ')} already belong to another class` });
     // }
     // return res.status(200).json({mes:"in fin"})
-;    const {name,supervisor,children} = req.body;
-    const newClass = new classSchema({
-        name,
-        supervisor,
-        children
-    });
-    newClass.save()
-    .then((data)=>res.status(200).json({data}))
-    .catch(err=>next(err));
+// ;    const {name,supervisor,children} = req.body;
+//     const newClass = new classSchema({
+//         name,
+//         supervisor,
+//         children
+//     });
+//     newClass.save()
+//     .then((data)=>res.status(200).json({data}))
+//     .catch(err=>next(err));
+// };
+
+async function isChildAssignedToClass(childID) {
+    // Query the classSchema to find any class document that contains the specified child ID
+    const classWithChild = await classSchema.exists({ children: childID });
+    return classWithChild; // Returns true if a class with the child is found, false otherwise
+}
+
+exports.insertClass = async (req, res, next) => {
+    try {
+        const { name, supervisor, children } = req.body;
+
+        // Check if any of the children are already assigned to another class
+        for (const child of children) {
+            const isAssigned = await isChildAssignedToClass(child);
+            if (isAssigned) {
+                return res.status(400).json({ message: `Child ${child} is already assigned to another class` });
+            }
+        }
+
+        // Create a new class instance
+        const newClass = new classSchema({
+            name,
+            supervisor,
+            children // Assuming children are already stored as ObjectIDs in the database
+        });
+
+        // Save the new class instance to the database
+        const savedClass = await newClass.save();
+
+        // If successful, send a success response with the saved class data
+        res.status(201).json({ message: 'Class created successfully', data: savedClass });
+    } catch (error) {
+        // If an error occurs, pass it to the error handling middleware
+        next(error);
+    }
 };
 
 exports.updateClass = (req,res,next)=>{

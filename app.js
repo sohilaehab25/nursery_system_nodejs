@@ -79,16 +79,17 @@ server.use("/images", express.static(path.join(__dirname, "images")))
 server.use(multer({storage,fileFilter}).single("Image"))
 
 server.use(express.json());
-server.use(classrouter);
-// server.use(teacherrouter);
 server.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use(childrouter);
+server.use(classrouter);
+
 
 //login layer
 server.use(loginRoute);
 //authuntication mw
- server.use(authenticationmw);
-server.use(childrouter);
+server.use(authenticationmw);
 server.use(teacherrouter);
+
 
 
 
